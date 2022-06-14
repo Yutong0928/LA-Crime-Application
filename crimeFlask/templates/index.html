@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Introduction</title>
+
+    <!-- bootstrap -->
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/headers/">
+    <link href="{{ url_for('static', filename="bootstrap/headers.css") }}" rel="stylesheet">
+
+    <!-- jquery -->
+    <script src="{{ url_for('static', filename="jquery-3.6.0.min.js") }}"></script>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="bootstrap/bootstrap.min.css") }}">
+    <script src="{{ url_for('static', filename="bootstrap/bootstrap.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="bootstrap/bootstrap.bundle.min.js") }}"></script>
+
+    <style>
+        .featurette-divider {
+            margin: 5rem 0; /* Space out the Bootstrap <hr> more */
+        }
+
+        /* Thin out the marketing headings */
+        .featurette-heading {
+            font-weight: 300;
+            line-height: 1;
+            /* rtl:remove */
+            letter-spacing: -.05rem;
+        }
+
+
+        /* RESPONSIVE CSS
+        -------------------------------------------------- */
+
+        @media (min-width: 40em) {
+            /* Bump up size of carousel content */
+            .carousel-caption p {
+                margin-bottom: 1.25rem;
+                font-size: 1.25rem;
+                line-height: 1.4;
+            }
+
+            .featurette-heading {
+                font-size: 50px;
+            }
+        }
+
+        @media (min-width: 62em) {
+            .featurette-heading {
+                margin-top: 7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- header -->
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            <span class="fs-4" style="font-weight: bolder">LA Crime Awareness and Weather</span>
+        </a>
+
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link active" aria-current="page"
+                                    style="color: white; font-weight: bolder; background-color: black">Home</a></li>
+            <li class="nav-item"><a href="{{ url_for('search') }}" class="nav-link" style="color: black">Crime</a></li>
+            <li class="nav-item"><a href="{{ url_for('analysis') }}" class="nav-link"
+                                    style="color: black">Analysis</a></li>
+            <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link" style="color: black">Contact Us</a>
+            </li>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
+                        data-bs-toggle="dropdown" aria-expanded="false" style="color: black; background-color: white">
+                    rawData
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    <li>
+                        <button class="dropdown-item" type="button"><a href="{{ url_for('rawCrime', page=0) }}">Crime
+                            Data</a></button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item" type="button"><a href="{{ url_for('rawWeather', page=0) }}">Weather
+                            Data</a></button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item" type="button"><a href="{{ url_for('rawCity', page=0) }}">City
+                            Data</a></button>
+                    </li>
+                </ul>
+            </div>
+        </ul>
+    </header>
+
+    <!-- context -->
+    <div class="container col-xxl-12 px-4 py-5">
+        <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+            <div class="col-10 col-sm-8 col-lg-6">
+                <img src="{{ url_for('static', filename="images/introduction.png") }}"
+                     class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700"
+                     height="500" loading="lazy">
+            </div>
+            <div class="col-lg-6">
+                <h1 class="display-5 fw-bold lh-1 mb-3">Introduction</h1>
+                <p class="lead">The occurrence of crime seems to be random,
+                    but through long-term research and investigation,
+                    it is found that many factors can lead to the increase or decrease of crime rate, such as weather
+                    conditions.<br/><br/>
+                    In this website, we want to gather data related to crime and weather,
+                    generating useful information and presenting it to our website to help <strong>LA-society</strong>
+                    become a safer place for people.</p>
+            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+            <div class="col-lg-6">
+                <h1 class="display-5 fw-bold lh-1 mb-3">MOTIVATION</h1>
+                <p class="lead" style="font-weight: normal">The daily crime total in Los Angeles is 1.11 times the
+                    California
+                    average and 1.22 times the national average. <br/><br/>
+                    As students in the University of Southern California,
+                    it is not a strange thing to receive various criminal alerts from the Department of Public Safety.
+                    <br/><br/>
+                    Considering the safety of social beings,
+                    This platform presents various information about the past crimes and the weather conditions at the
+                    time when the crime happened
+                    to help people make choices and necessary precautions for their travel and commutes,
+                    minimizing the occurrence of crimes as much as possible.</p>
+            </div>
+            <div class="col-10 col-sm-8 col-lg-6">
+                <img src="{{ url_for('static', filename="images/motivation.png") }}"
+                     class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700"
+                     height="500" loading="lazy">
+            </div>
+        </div>
+
+
+        <hr>
+
+        <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+            <div class="col-10 col-sm-8 col-lg-6">
+                <img src="{{ url_for('static', filename="images/dataflow.png") }}"
+                     class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700"
+                     height="500" loading="lazy">
+            </div>
+            <div class="col-lg-6">
+                <h1 class="display-5 fw-bold lh-1 mb-3">Data flow</h1>
+                <p class="lead" style="font-weight: normal">We write two crawlers to scrape the crime and weather data
+                and upload the raw data to the Firebase.
+                <br><br>
+                Data ETL stage (extract, transform, load) would be implemented in Spark after which the cleaned data be injected into Mysql database.
+                <br><br>
+                For our UI-based website, we utilize Flask to connect mysql server, transmit the request data to the Front-end,
+                and visualize the crime and weather data in our web page based on BootStrap and Google Map Api.
+                <br><br>
+                Finally we deployed our whole project on an AWS EC2 instance.</p>
+            </div>
+        </div>
+
+
+        <hr>
+
+        <p align="center">
+            <iframe width="900" height="500" src="https://www.youtube.com/embed/mN8pIjzu9cw" allowfullscreen
+                    style="margin: 0 auto;"></iframe>
+        </p>
+
+    </div>
+</div>
+
+</body>
+</html>

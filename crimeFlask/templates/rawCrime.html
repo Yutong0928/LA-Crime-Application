@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Raw Crime</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/headers/">
+    <link href="{{ url_for('static', filename="bootstrap/headers.css") }}" rel="stylesheet">
+
+    <!-- jquery -->
+    <script src="{{ url_for('static', filename="jquery-3.6.0.min.js") }}"></script>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="bootstrap/bootstrap.min.css") }}">
+    <script src="{{ url_for('static', filename="bootstrap/bootstrap.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="bootstrap/bootstrap.bundle.min.js") }}"></script>
+
+</head>
+<body>
+
+<div class="container">
+    <!-- header -->
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            <span class="fs-4" style="font-weight: bolder">LA Crime Awareness and Weather</span>
+        </a>
+
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link" style="color: black;">Home</a>
+            </li>
+            <li class="nav-item"><a href="{{ url_for('search') }}" class="nav-link" style="color: black">Crime</a></li>
+            <li class="nav-item"><a href="{{ url_for('analysis') }}" class="nav-link"
+                                    style="color: black">Analysis</a></li>
+            <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link" style="color: black">Contact Us</a>
+            </li>
+        </ul>
+        <div class="dropdown">
+            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown" aria-expanded="false"
+                    style="color: white; background-color: black; font-weight: bolder">
+                rawData
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                <li>
+                    <button class="dropdown-item" type="button"><a href="{{ url_for('rawCrime', page=0) }}">Crime
+                        Data</a></button>
+                </li>
+                <li>
+                    <button class="dropdown-item" type="button"><a href="{{ url_for('rawWeather', page=0) }}">Weather Data</a></button>
+                </li>
+                <li>
+                    <button class="dropdown-item" type="button"><a href="{{ url_for('rawCity', page=0) }}">City Data</a></button>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <p style="color: red">Notice: Crime data retrieved from
+        <strong><a href="https://catalog.data.gov/dataset/crime-data-from-2020-to-present">here</a></strong>
+    </p>
+
+    <div style="overflow: scroll">
+        <table class="table text-center" style="table-layout: fixed;">
+            <thead class="table-dark">
+            <tr>
+                {% for header in context.headers %}
+                    <th scope="col" style="width: 150px;">{{ header }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for case in context.crimeCase %}
+                <tr>
+                    {% for column in case %}
+                        <td style="width: 150px;">{{ column }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="offset-md-3 col-md-6" style="text-align: center">
+            <nav style="display: inline-block; float: none;">
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" href="{{ url_for('rawCrime', page=0) }}">First</a></li>
+                    <li class="page-item"><a class="page-link"
+                                             href="{{ url_for('rawCrime', page=context.prePage) }}">Pre</a></li>
+                    <li class="page-item"><a class="page-link"
+                                             href="{{ url_for('rawCrime', page=context.curPage) }}">{{ context.curPage }}</a>
+                    </li>
+                    <li class="page-item"><a class="page-link"
+                                             href="{{ url_for('rawCrime', page=context.nxtPage) }}">Next</a></li>
+                    <li class="page-item"><a class="page-link"
+                                             href="{{ url_for('rawCrime', page=context.maxPage) }}">Last</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

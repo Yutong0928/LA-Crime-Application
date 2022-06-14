@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crime Presentation</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/headers/">
+    <link href="{{ url_for('static', filename="bootstrap/headers.css") }}" rel="stylesheet">
+
+    <!-- google map -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename="googleMap/style.css") }}"/>
+
+    <!-- jquery -->
+    <script src="{{ url_for('static', filename="jquery-3.6.0.min.js") }}"></script>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="bootstrap/bootstrap.min.css") }}">
+    <script src="{{ url_for('static', filename="bootstrap/bootstrap.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="bootstrap/bootstrap.bundle.min.js") }}"></script>
+
+    <!-- search box -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename="searchBox/style.css") }}"/>
+
+    <style>
+        article {
+            box-shadow: 10px 10px gray;
+            border-color: black;
+            border-width: 2px;
+            border-style: solid;
+            border-radius: 10px;
+        }
+
+        .imageShow {
+            height: 50px;
+            width: 50px;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            background-image: url("{{ url_for('static', filename="images/others.png") }}");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: 90%, 10%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- map -->
+<div id="map"></div>
+
+<div class="container">
+    <!-- header -->
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            <span class="fs-4" style="font-weight: bolder">LA Crime Awareness and Weather</span>
+        </a>
+
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link" style="color: black;">Home</a>
+            </li>
+            <li class="nav-item"><a href="{{ url_for('search') }}" class="nav-link" style="color: black">Crime</a></li>
+            <li class="nav-item"><a href="{{ url_for('analysis') }}" class="nav-link"
+                                    style="color: black">Analysis</a></li>
+            <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link" style="color: black">Contact Us</a>
+            </li>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
+                        data-bs-toggle="dropdown" aria-expanded="false" style="color: black; background-color: white">
+                    rawData
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    <li>
+                        <button class="dropdown-item" type="button"><a href="{{ url_for('rawCrime', page=0) }}">Crime
+                            Data</a></button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item" type="button"><a href="{{ url_for('rawWeather', page=0) }}">Weather
+                            Data</a></button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item" type="button"><a href="{{ url_for('rawCity', page=0) }}">City Data</a></button>
+                    </li>
+                </ul>
+            </div>
+        </ul>
+    </header>
+
+    <!-- search box -->
+    <div class="searchbar">
+        <img src="{{ url_for('static', filename='images/search.png') }}" class="mg">
+        <input type="text" id="search" value="Search Location"
+               onfocus="if(value=='Search Location')value=''" onblur="if(!value)value='Search Location'"
+               name="keyword">
+    </div>
+
+    <br/>
+
+    <!-- time selection -->
+    <div id="timeSpan" style="text-align: center">
+        <form action="{{ url_for('crime', lat=context.center[0], lng=context.center[1]) }}"
+              method="post">
+            <label for="start">Start date: &nbsp</label>
+            <input type="date" id="start" class="btn btn-default" name="crime-start" value="{{ context.timeSpan[0] }}"
+                   min="{{ context.timeSpan[2] }}"
+                   max="{{ context.timeSpan[3] }}">
+            <label for="start">End date: &nbsp</label>
+            <input type="date" id="start" class="btn btn-default" name="crime-end" value="{{ context.timeSpan[1] }}"
+                   min="{{ context.timeSpan[2] }}"
+                   max="{{ context.timeSpan[3] }}">
+            <br/>
+            <br/>
+            <!-- amount -->
+            <div class="row">
+                <div class="col-md-3 offset-md-3">
+                    <strong>The amount of crimes to display: </strong>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" value="20" id="flexRadioDefault1" checked>
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            20
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" value="200" id="flexRadioDefault2">
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            200
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-link" id="search" style="color: black; font-weight: bolder;">
+                search
+            </button>
+        </form>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <!-- check -->
+        <div class="col-md-2">
+
+            <!-- crime type -->
+            <div id="crimeType">
+                <h5>crime Type</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="theft" id="flexCheckDefault" checked>
+                    <label class="form-check-label" for="flexCheckDefault">
+                        theft
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="sexual" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        sexual
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="assault" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        assault
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="burglary" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        burglary
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="robbery" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        robbery
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="vandalism" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        vandalism
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="vehicle" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        vehicle
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="others" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        others
+                    </label>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- weather -->
+            <div id="weather">
+                <h5>weather</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="fair" id="flexCheckDefault" checked>
+                    <label class="form-check-label" for="flexCheckDefault">
+                        fair
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="cloudy" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        cloudy
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="rain" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        rain
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="haze" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        haze
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="fog" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        fog
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- visualize data -->
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-10 offset-md-2">
+                    {% for article in context.articles %}
+                        <div id="{{ 'crimeCase' + article.crmNumber }}">
+                            <div class="row" style="margin-top: 30px; text-align: center">
+                                <div class="col-md-10">
+                                    <article>
+                                        <header>
+                                            <h4>{{ article.CrmDesc }}</h4>
+                                            <span>
+                                            <strong>Time: </strong><time>{{ article.Date }}</time>
+                                        </span>
+                                        </header>
+                                        <br>
+                                        <div>
+                                            <p>
+                                                <strong>Location: </strong> {{ article.Location }}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p>
+                                                <strong>Weather: </strong> {{ article.Weather }}
+                                            </p>
+                                        </div>
+                                    </article>
+                                </div>
+                                <div id="{{ 'crimeImage' + article.crmNumber }}" class="col-md-1 imageShow"></div>
+                                <br/>
+                                <hr>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // get the element number and type number
+    let typeWeather = {{ context.typeWeather }};
+
+    // type match
+    const matchType = new Map();
+    matchType.set(1, "theft");
+    matchType.set(2, "sexual");
+    matchType.set(3, "assault");
+    matchType.set(4, "burglary");
+    matchType.set(5, "robbery");
+    matchType.set(6, "vandalism");
+    matchType.set(7, "vehicle");
+    matchType.set(8, "others");
+
+    // weather match
+    const matchWeather = new Map();
+    matchWeather.set(1, "fair");
+    matchWeather.set(2, "cloudy");
+    matchWeather.set(3, "rain");
+    matchWeather.set(4, "haze");
+    matchWeather.set(5, "fog");
+
+    // check box
+    let checkboxes = document.getElementsByClassName('form-check-input');
+
+    // set the background images for each element
+    for (let i = 0; i < typeWeather.length; i++) {
+        let element = document.getElementById('crimeImage' + typeWeather[i][0]);
+        switch (typeWeather[i][1]) {
+            case 1:
+                element.style.backgroundImage = "url(\"{{ url_for('static', filename="images/thief.png") }}\")";
+                break;
+            case 2:
+                element.style.backgroundImage = "url(\"{{ url_for('static', filename="images/sexual.png") }}\")";
+                break;
+            case 3:
+                element.style.backgroundImage = "url(\"{{ url_for('static', filename="images/assault.png") }}\")";
+                break;
+            case 4:
+                element.style.backgroundImage = "url(\"{{ url_for('static', filename="images/burglary.png") }}\")";
+                break;
+            case 5:
+                element.style.backgroundImage = "url(\"{{ url_for('static', filename="images/robbery.png") }}\")";
+                break;
+            case 6:
+                element.style.backgroundImage = "url(\"{{ url_for('static', filename="images/vandalism.png") }}\")";
+                break;
+            case 7:
+                element.style.backgroundImage = "url(\"{{ url_for('static', filename="images/vehicle.png") }}\")";
+                break;
+            case 8:
+                element.style.backgroundImage = "url(\"{{ url_for('static', filename="images/others.png") }}\")";
+                break;
+        }
+    }
+
+    let validCheck = new Map();
+
+    // write a function to get all of the values of checkbox
+    function valid_check() {
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                validCheck.set(checkboxes[i].value, true);
+            } else {
+                validCheck.set(checkboxes[i].value, false);
+            }
+        }
+    }
+
+    // init the checkbox
+    valid_check();
+
+    // travel all of the checkbox and add each one a listener
+    for (let i = 0; i < checkboxes.length; i++) {
+        // add listener to each check box
+        let checkbox = checkboxes[i];
+        checkbox.addEventListener('click', function () {
+            // update the checkboxes value
+            valid_check();
+            console.log(validCheck);
+            for (let j = 0; j < typeWeather.length; j++) {
+                // get the specific element
+                let element = document.getElementById('crimeCase' + typeWeather[j][0]);
+                if (validCheck.get(matchType.get(typeWeather[j][1])) && validCheck.get(matchWeather.get(typeWeather[j][2]))) {
+                    element.style.display = 'block';
+                } else {
+                    element.style.display = 'none';
+                }
+            }
+            // refresh the map
+            initMap();
+        })
+    }
+
+    // receive the center info
+    let lat = {{ context.center[0] }};
+    let lng = {{ context.center[1] }};
+    // receive all of the information about crime
+    let crimeLocation = {{ context.locations }};
+
+    // initial the google map
+    function initMap() {
+        // define a center for los angeles
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 16,
+            center: {lat: lat, lng: lng},
+        });
+        // add a marker for central location
+        new google.maps.Marker({
+            position: {
+                lat: lat,
+                lng: lng,
+            },
+            map,
+        });
+
+        // define the format of icons
+        const icons = {
+            thief: {
+                url: "{{ url_for('static', filename="images/thief.png") }}",
+                scaledSize: new google.maps.Size(40, 40), // scaled size
+                origin: new google.maps.Point(0, 0), //
+            },
+            sexual: {
+                url: "{{ url_for('static', filename="images/sexual.png") }}",
+                scaledSize: new google.maps.Size(40, 40), // scaled size
+                origin: new google.maps.Point(0, 0), //
+            },
+            assault: {
+                url: "{{ url_for('static', filename="images/assault.png") }}",
+                scaledSize: new google.maps.Size(50, 50), // scaled size
+                origin: new google.maps.Point(0, 0), //
+            },
+            burglary: {
+                url: "{{ url_for('static', filename="images/burglary.png") }}",
+                scaledSize: new google.maps.Size(50, 50), // scaled size
+                origin: new google.maps.Point(0, 0), //
+            },
+            robbery: {
+                url: "{{ url_for('static', filename="images/robbery.png") }}",
+                scaledSize: new google.maps.Size(40, 40), // scaled size
+                origin: new google.maps.Point(0, 0), //
+            },
+            vandalism: {
+                url: "{{ url_for('static', filename="images/vandalism.png") }}",
+                scaledSize: new google.maps.Size(40, 40), // scaled size
+                origin: new google.maps.Point(0, 0), //
+            },
+            vehicle: {
+                url: "{{ url_for('static', filename="images/vehicle.png") }}",
+                scaledSize: new google.maps.Size(40, 40), // scaled size
+                origin: new google.maps.Point(0, 0), //
+            },
+            others: {
+                url: "{{ url_for('static', filename="images/others.png") }}",
+                scaledSize: new google.maps.Size(50, 50), // scaled size
+                origin: new google.maps.Point(0, 0), //
+            },
+        };
+
+        // customer a marker which looks like a red circle
+        // let circle = {
+        //    path: google.maps.SymbolPath.CIRCLE,
+        //    fillColor: 'red',
+        //    fillOpacity: .6,
+        //    scale: 2.5,
+        //    strokeColor: 'red',
+        //    strokeWeight: 1
+        // };
+
+        // write a loop to show it in the map
+        for (let i = 0; i < crimeLocation.length; i++) {
+            // icon in the map
+            let icon = icons.others;
+            switch (typeWeather[i][1]) {
+                case 1:
+                    icon = icons.thief;
+                    break;
+                case 2:
+                    icon = icons.sexual;
+                    break;
+                case 3:
+                    icon = icons.assault;
+                    break;
+                case 4:
+                    icon = icons.burglary;
+                    break;
+                case 5:
+                    icon = icons.robbery;
+                    break;
+                case 6:
+                    icon = icons.vandalism;
+                    break;
+                case 7:
+                    icon = icons.vehicle;
+                    break;
+                case 8:
+                    icon = icons.others;
+                    break;
+            }
+
+            // Create an info window to share between markers.
+            const infoWindow = new google.maps.InfoWindow();
+
+            // load the checked data into google map
+            if (validCheck.get(matchType.get(typeWeather[i][1])) && validCheck.get(matchWeather.get(typeWeather[i][2]))) {
+                // add a marker into google map
+                const marker = new google.maps.Marker({
+                    position: {
+                        lat: crimeLocation[i][1],
+                        lng: crimeLocation[i][2],
+                    },
+                    title: '<strong>distance: </strong>' + crimeLocation[i][0].toString() + 'km' + '<br>'
+                     + '<strong>weather: </strong>' + matchWeather.get(typeWeather[i][2]) + '<br>'
+                     + '<strong>date: </strong>' + crimeLocation[i][3].toString() + '/' + crimeLocation[i][4].toString() + '/' + crimeLocation[i][5].toString(),
+                    map,
+                    icon: icon,
+                });
+
+                // Add a click listener for each marker, and set up the info window.
+                marker.addListener("click", () => {
+                  infoWindow.close();
+                  infoWindow.setContent(marker.getTitle());
+                  infoWindow.open(marker.getMap(), marker);
+                });
+            }
+        }
+    }
+
+</script>
+<script src="{{ url_for('static', filename='searchBox/searchbox.js') }}"></script>
+<!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+<script
+        src="https://maps.googleapis.com/maps/api/js?key=keys&callback=initMap&v=weekly"
+        async
+></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crime Presentation</title>
+
+    <!-- bootstrap -->
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/headers/">
+    <link href="../static/bootstrap/headers.css" rel="stylesheet">
+
+    <!-- google map -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+    <!-- jquery -->
+    <script src="{{ url_for('static', filename="jquery-3.6.0.min.js") }}"></script>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="bootstrap/bootstrap.min.css") }}">
+    <script src="{{ url_for('static', filename="bootstrap/bootstrap.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="bootstrap/bootstrap.bundle.min.js") }}"></script>
+
+
+    <!-- search box -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename="searchBox/style.css") }}"/>
+</head>
+<body>
+
+<div class="container">
+    <!-- header -->
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            <span class="fs-4" style="font-weight: bolder">LA Crime Awareness and Weather</span>
+        </a>
+
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link" style="color: black">Home</a></li>
+            <li class="nav-item"><a href="{{ url_for('search') }}" class="nav-link active" aria-current="page"
+                                    style="color: white; font-weight: bolder; background-color: black">Crime</a></li>
+            <li class="nav-item"><a href="{{ url_for('analysis') }}" class="nav-link"
+                                    style="color: black">Analysis</a></li>
+            <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link" style="color: black">Contact Us</a></li>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
+                        data-bs-toggle="dropdown" aria-expanded="false" style="color: black; background-color: white">
+                    rawData
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    <li>
+                        <button class="dropdown-item" type="button"><a href="{{ url_for('rawCrime', page=0) }}">Crime
+                            Data</a></button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item" type="button"><a href="{{ url_for('rawWeather', page=0) }}">Weather Data</a></button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item" type="button"><a href="{{ url_for('rawCity', page=0) }}">City Data</a></button>
+                    </li>
+                </ul>
+            </div>
+        </ul>
+    </header>
+
+    <div id="logo">
+        <img src="{{ url_for('static', filename="images/crime.png") }}" class="logo">
+    </div>
+
+    <!-- search box -->
+    <div class="searchbar"
+         style="position: absolute; bottom: 40%; left: 50%; margin-bottom: 100px; margin-left: -276px;">
+        <img src="{{ url_for('static', filename="images/search.png" ) }}" class="mg">
+        <input type="text" id="search" value="Search Location"
+               onfocus="if(value=='Search Location')value=''" onblur="if(!value)value='Search Location'" name="keyword">
+    </div>
+
+    <!-- use current location -->
+    <div id="curLocation"
+         style="position: absolute; bottom: 30%; left: 50%; margin-bottom: 100px; margin-left: -50px;">
+        <span id="img_content">
+             <img src="{{ url_for('static', filename="images/location.png") }}" class="curLocation"
+                  title="current location">
+        </span>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='searchBox/searchbox.js') }}"></script>
+</body>
+</html>
